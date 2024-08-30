@@ -1,15 +1,13 @@
 package com.booleanuk.api.bagels.repositories;
 
 import com.booleanuk.api.bagels.models.Product;
-import com.sun.source.tree.BreakTree;
+import org.springframework.web.server.ResponseStatusException;
 
-import javax.xml.crypto.Data;
 import java.util.ArrayList;
-import java.util.List;
 import java.util.Objects;
 
 public class ProductsRepository {
-    private List<Product> data = new ArrayList<>();
+    private ArrayList<Product> data;
 
     public ProductsRepository(){
         this.data = new ArrayList<>();
@@ -32,7 +30,19 @@ public class ProductsRepository {
         return product;
     }
 
-    public List<Product> findAll() {
+    public ArrayList<Product> findAll(String category) {
+        ArrayList<Product> categoryList = new ArrayList<>();
+
+        for (Product product : data){
+            if(product.getCategory().equalsIgnoreCase(category)){
+                categoryList.add(product);
+            }
+        }
+
+        if (!categoryList.isEmpty()){
+            return categoryList;
+        }
+
         return this.data;
     }
 
@@ -46,7 +56,11 @@ public class ProductsRepository {
     }
 
     public Product update(int id, Product insertProduct){
+
         for(Product product : data){
+            if (product.getId() == id && Objects.equals(product.getName(), insertProduct.getName())) {
+                throw new IllegalArgumentException();
+            }
             if (product.getId() == id){
                 product.setName(insertProduct.getName());
                 product.setCategory(insertProduct.getCategory());
